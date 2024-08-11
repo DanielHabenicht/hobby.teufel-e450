@@ -22,7 +22,7 @@ def buttonPress(channel):
     print("Button pressed:" + str(prev) + " - " + str(current))
     prev = current
 
-GPIO.add_event_detect(p_0_9, GPIO.BOTH, callback=buttonPress) #, bouncetime=6)
+#GPIO.add_event_detect(p_0_9, GPIO.BOTH, callback=buttonPress) #, bouncetime=6)
 
 # Always HIGH as the button press disconnects the power
 p_0_0 = 7 # P0.0   - Source switch / pairing
@@ -111,7 +111,7 @@ system_volume = 0
 """
 
 def reset_volume():
-    
+
     for i in range(13 * 3):
         volume_down()
     global system_volume
@@ -121,28 +121,27 @@ def reset_volume():
 
 def adjust_volume(volume):
     """ adjust volume (0-100) to the system volume """
-    
-    print("adjust volume")
+
+    print("adjust volume:" + str(volume))
     global system_volume
     # convert volume to system volume
-    new_system_volume = int(volume / 100 * 39) 
+    new_system_volume = int(volume / 100 * 39)
 
     print("system_volume: " + str(system_volume))
     print("new volume: " + str(new_system_volume))
     diff = new_system_volume - system_volume
     print("diff: " + str(diff))
+    print("diff percentage:" + str(diff/39))
     if diff == 0:
         return
     if diff < 0:
         for i in range(abs(diff)):
             print("decrease")
-            pass
-            # volume_down()
+            volume_down()
     else:
         for i in range(abs(diff)):
             print("increase")
-            pass
-            # volume_up()
+            volume_up()
     system_volume = new_system_volume
 
 
@@ -151,26 +150,26 @@ def volume_up():
     print("volume up")
     # Emulate the hardware encoder by "rotating" it
     GPIO.output(p_0_1, GPIO.HIGH)
-    time.sleep(0.1)
+    time.sleep(0.05)
     GPIO.output(p_0_3, GPIO.HIGH)
-    time.sleep(0.1)
+    time.sleep(0.05)
     GPIO.output(p_0_1, GPIO.LOW)
-    time.sleep(0.1)
+    time.sleep(0.05)
     GPIO.output(p_0_3, GPIO.LOW)
-    time.sleep(0.1)
+    time.sleep(0.05)
 
 
 def volume_down():
     print("volume down")
     # Emulate the hardware encoder by "rotating" it
     GPIO.output(p_0_3, GPIO.HIGH)
-    time.sleep(0.1)
+    time.sleep(0.01)
     GPIO.output(p_0_1, GPIO.HIGH)
-    time.sleep(0.1)
+    time.sleep(0.01)
     GPIO.output(p_0_3, GPIO.LOW)
-    time.sleep(0.1)
+    time.sleep(0.01)
     GPIO.output(p_0_1, GPIO.LOW)
-    time.sleep(0.1)
+    time.sleep(0.01)
 
 
 def test_functionality():
