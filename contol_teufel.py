@@ -13,16 +13,16 @@ GPIO.setmode(GPIO.BCM)
 p_0_9 = 25 # P0.09 - LED2
 GPIO.setup(p_0_9, GPIO.IN)
 
+
 prev = 0
 def buttonPress(channel):
     current = GPIO.input(p_0_9)
     global prev
-    if prev is not current:
-        print(datetime.datetime.now())
-        print("Button pressed:" + str(prev) + " - " + str(current))
-        prev = current
+#    if prev is not current:
+    print("Button pressed:" + str(prev) + " - " + str(current))
+    prev = current
 
-GPIO.add_event_detect(p_0_9, GPIO.FALLING, callback=buttonPress)
+GPIO.add_event_detect(p_0_9, GPIO.BOTH, callback=buttonPress) #, bouncetime=6)
 
 # Always HIGH as the button press disconnects the power
 p_0_0 = 7 # P0.0   - Source switch / pairing
@@ -42,8 +42,6 @@ GPIO.setup(p_0_3, GPIO.OUT, initial=GPIO.LOW)
 #print("p_0_1:" + str(GPIO.input(p_0_1)))
 #print("p_0_3:" + str(GPIO.input(p_0_3)))
 
-
-
 def switch_source():
     print("switch source")
     GPIO.output(p_0_0, GPIO.LOW)
@@ -59,13 +57,37 @@ def pair():
     GPIO.output(p_0_0, True)
 
 
+def check_if_on():
+    print("check state")
+    GPIO.output(p_0_3, GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(p_0_1, GPIO.HIGH)
+    time.sleep(0.1)
+    GPIO.output(p_0_3, GPIO.LOW)
+    time.sleep(0.1)
+    GPIO.output(p_0_1, GPIO.LOW)
+#    channel = GPIO.wait_for_edge(p_0_9, GPIO.RISING, timeout=2000)
+ #   if channel is None:
+  #      print('off')
+   # else:
+    #    print('on')
+
+
+
 def turn_on():
     print("turn on")
     # detect if it is on by adjusting volume and detecting led blink or not
     GPIO.output(p_0_4, GPIO.LOW)
     time.sleep(0.5)
     GPIO.output(p_0_4, GPIO.HIGH)
-    # wait for device to turn on
+    channel = GPIO.wait_for_edge(p_0_9, GPIO.RISING, timeout=2000)
+    if channel is None:
+        print('Timeout occurred')
+    else:
+        print('Edge detected on channel', channel)
+
+    print("continue")
+   # wait for device to turn on
     time.sleep(2)
 
 def turn_off():
@@ -177,14 +199,19 @@ def test_functionality():
 try:
    reset_volume()
    adjust_volume(50)
-#    test_functionality()
+#   check_if_on()
+#   turn_on()
+#   test_functionality()
+#   time.sleep(1)
 #   switch_source()
 except KeyboardInterrupt: # If CTRL+C is pressed, exit cleanly:
     print("Keyboard interrupt")
 
-except:
-    print("some error")
 
 finally:
     print("clean up")
-    GPIO.cleanup() # cleanup all GPIO
+    #GPIO.output(p_0_0, GPIO.HIGH)
+    #GPIO.output(p_0_4, GPIO.HIGH)
+    #GPIO.output(p_0_1, GPIO.LOW)
+    #GPIO.output(p_0_3, GPIO.LOW)
+#    GPIO.cleanup() # cleanup all GPIO
