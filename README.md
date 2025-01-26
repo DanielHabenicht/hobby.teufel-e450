@@ -2,6 +2,8 @@ From: https://hackaday.io/project/184708-make-teufel-smart-home-capable-with-mqt
 
 # Guide
 
+> Example Video [Example Video](./VID_20240811_224344.mp4)
+
 ## Flash nrf51822
 
 ### Prerequisites
